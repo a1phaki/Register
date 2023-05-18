@@ -29,7 +29,7 @@ class Login : AppCompatActivity() {
 
         auth = Firebase.auth
 
-        //按下登入按鈕後跳轉到Home頁面
+        //按下登入按鈕後確認帳號密碼是否正確
         binding.LoginBtn.setOnClickListener{
             if(binding.email.text.toString().isEmpty()){
                 Toast.makeText(this , "Please Enter Email" , Toast.LENGTH_SHORT).show()
@@ -37,12 +37,11 @@ class Login : AppCompatActivity() {
                 Toast.makeText(this , "Please Enter Password" , Toast.LENGTH_SHORT).show()
             }else{
                 login()
-
                 }
             }
         }
 
-    //檢查登入帳號密碼是否成功
+    //檢查登入帳號密碼是否成功 成功則跳轉到Home頁面
     private fun login(){
 
         //取得email and password
@@ -54,9 +53,7 @@ class Login : AppCompatActivity() {
             .addOnCompleteListener{
                 if(it.isSuccessful){
                     Toast.makeText(this , "Login Successfully" , Toast.LENGTH_SHORT).show()
-                    var intent=Intent(this,Home::class.java)
-                    intent.putExtra("key1",binding.email.text.toString())
-                    startActivity(intent)
+                    startActivity(Intent(this, Home::class.java))
 
                 }else{
                     it.exception?.message?.let {  }

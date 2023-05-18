@@ -11,8 +11,12 @@ import com.google.firebase.FirebaseException
 import com.google.firebase.FirebaseTooManyRequestsException
 import com.google.firebase.auth.*
 import com.google.firebase.auth.ktx.auth
+import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
+import java.text.SimpleDateFormat
+import java.util.*
 import java.util.concurrent.TimeUnit
+import kotlin.collections.HashMap
 
 class Register : AppCompatActivity() {
 
@@ -42,6 +46,8 @@ class Register : AppCompatActivity() {
         //呼叫id
         phoneNumberET = findViewById(R.id.phoneEditTextNumber)
         mAuth = FirebaseAuth.getInstance()
+        val database = Firebase.database("https://register-945ad-default-rtdb.asia-southeast1.firebasedatabase.app")
+        val myRef=database.getReference("users")
 
         //OTPBtn點擊事件
         binding.sendOTPBtn.setOnClickListener {
@@ -84,6 +90,15 @@ class Register : AppCompatActivity() {
             val typedOTP = binding.otpEditTextNumber.text.toString()
             val email = binding.email.text.toString()
             val password = binding.password.text.toString()
+            val number = phoneNumberET.text.trim().toString()
+            val date=binding.Date.text.toString()
+            val name=binding.username.text.toString()
+
+            val users = HashMap<String, Any>()
+            users["name"] = name
+            users["phone"] = number
+            users["date"] = date
+            val emailAsNode =email?.replace(".", "_")//將user的email的.取代成＿（firebase的節點不能有.)
 
             if(typedOTP.isNotEmpty()){
                 if(typedOTP.length ==6){
@@ -97,6 +112,9 @@ class Register : AppCompatActivity() {
                             //判斷是否成功放入
                             if(it.isSuccessful){
                                 Toast.makeText(this , "Register Successfully" , Toast.LENGTH_SHORT).show()
+                                if (emailAsNode != null) {
+                                    myRef.child(emailAsNode).setValue(users)
+                                }
                                 finish()
                             }else{
                                 Toast.makeText(this , "Register Failed" , Toast.LENGTH_SHORT).show()
